@@ -56,7 +56,9 @@ type Hosts struct {
 
 // Return ```true``` if hosts file is writable.
 func (h *Hosts) IsWritable() bool {
-	_, err := os.OpenFile(h.Path, os.O_WRONLY, 0660)
+	file, err := os.OpenFile(h.Path, os.O_WRONLY, 0660)
+	defer file.Close()
+
 	if err != nil {
 		return false
 	}
@@ -101,6 +103,7 @@ func (h Hosts) Flush() error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	w := bufio.NewWriter(file)
 
